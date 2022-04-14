@@ -21,7 +21,8 @@ import promiseRetry from "promise-retry";
 import { liquidityPriceFOrmatter } from "../balance";
 import CheckMyBalanceTokenAAndB from "../address-liquidity-balance";
 import { debounce } from "lodash";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { checkForWeb3 } from "../../core/store/actions/web3";
 
 export default function AddLiquidity() {
   const [approvedTokenA, setApprovedTokenA] = useState(true);
@@ -33,6 +34,7 @@ export default function AddLiquidity() {
 
   const connected = useSelector((state) => state.user.isConnected);
   const connectedAccount = useSelector((state) => state.user.account);
+  const dispatch = useDispatch()
 
   const onValueChangeAmountIn = async (props, e) => {
     if (!isPairExistent) {
@@ -566,7 +568,7 @@ export default function AddLiquidity() {
                 <Web3StatusConnect
                   style={{ minHeight: "52px" }}
                   disabled={connected}
-                  onClick={() => window.location.reload()}
+                  onClick={() => dispatch(checkForWeb3())}
                 >
                   {" "}
                   Connect to a wallet{" "}

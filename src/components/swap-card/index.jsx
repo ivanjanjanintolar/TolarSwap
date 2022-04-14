@@ -19,7 +19,8 @@ import BigNumber from "bignumber.js";
 import promiseRetry from "promise-retry";
 import CheckMyBalance from "../address-balance";
 import { debounce } from "lodash";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { checkForWeb3, connectWallet } from "../../core/store/actions/web3";
 
 export default function SwapCard() {
   const [allowedToSwap, setAllowedToSwap] = useState(true);
@@ -27,7 +28,7 @@ export default function SwapCard() {
   const [sufficientLiquidity, setSufficientLiquidity] = useState(true);
   const [isInputHigherThanBalance, setIsInputHigherThanBalance] =
     useState(false);
-
+  const dispatch = useDispatch();
   const connected = useSelector(state=>state.user.isConnected)
   const connectedAccount = useSelector(state=>state.user.account)
 
@@ -413,7 +414,7 @@ export default function SwapCard() {
                 <Web3StatusConnect
                   style={{ minHeight: "52px" }}
                   disabled={connected}
-                  onClick={() => window.location.reload()}
+                  onClick={() => dispatch(checkForWeb3())}
                 >
                   {" "}
                   Connect to a wallet{" "}

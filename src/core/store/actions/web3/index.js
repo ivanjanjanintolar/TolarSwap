@@ -3,6 +3,7 @@ import * as types from './types';
 import { REACT_APP_ENVIRONMENT, REACT_APP_TOLAR_GATEWAY } from '../../../../utils/common';
 import { getBalance } from '../../../../utils/functions/read-only/GetBalance';
 import { EthereumAddress,UsdcAddress,WTOLAddress } from '../../../../utils/Web3Helper';
+import { toast } from 'react-toastify';
 const Web3 = require('@dreamfactoryhr/web3t');
 var web3 = new Web3(REACT_APP_TOLAR_GATEWAY());
 
@@ -13,8 +14,9 @@ export const checkForWeb3 = () => async dispatch => {
         // setupListeners();
         store.dispatch(connectWallet());
     } else {
-        store.dispatch({ type: types.ON_WEB3_CHECK, payload: false });
-        return;
+         toast("Please Install Taquin wallet to interact with TolarSwap :)");
+         store.dispatch({ type: types.ON_WEB3_CHECK, payload: false });
+         return
     }
 }
 

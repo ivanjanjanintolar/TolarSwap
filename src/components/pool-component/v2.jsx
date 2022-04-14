@@ -21,7 +21,8 @@ import { checkForAllowance } from "../../utils/functions/read-only/CheckForAllow
 import { LPSpinner } from "../hooks/polling";
 import promiseRetry from "promise-retry";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { checkForWeb3 } from "../../core/store/actions/web3";
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -79,6 +80,7 @@ const ResponsiveButtonSecondary = styled(ButtonSecondary)`
 export default function PoolV2() {
   const connected = useSelector(state=>state.user.isConnected)
   const connectedAccount = useSelector(state=>state.user.account)
+  const dispatch = useDispatch()
   const [addressLiquidityList, setAddressLiquidityList] = useState([]);
   const [isMounting, setIsMounting] = useState(false);
   const [liquidityState, setLiquidityState] = useState(
@@ -454,7 +456,7 @@ export default function PoolV2() {
               <Web3StatusGeneric
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.reload();
+                  dispatch(checkForWeb3())
                 }}
               >
                 <TYPE.body color={theme.text3} textAlign="center">

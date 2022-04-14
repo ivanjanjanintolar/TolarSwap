@@ -29,9 +29,9 @@ function App() {
   const [isMounting, setIsMounting] = useState(false);
   const user = useSelector(state=>state.user)
   const dispatch = useDispatch()
-  useEffect(()=>{
-    dispatch(checkForWeb3())
-  },[])
+  // useEffect(()=>{
+  //   dispatch(checkForWeb3())
+  // },[])
 
   useEffect(() => {
     if (!blockNumber) {
