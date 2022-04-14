@@ -9,7 +9,7 @@ import { Activity } from "react-feather";
 import Identicon from "../identicon";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useDispatch, useSelector } from "react-redux";
-import { checkForWeb3 } from "../../core/store/actions/web3";
+import { checkForWeb3, connectWallet } from "../../core/store/actions/web3";
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -266,7 +266,7 @@ export default function Header() {
               <Web3StatusConnect
                 style={{ width: "220px", justifyContent: "center" }}
                 disabled={connected}
-                onClick={() => dispatch(checkForWeb3())}
+                onClick={() => dispatch(connectWallet())}
               >
                 <NetworkIcon /> Connect to a wallet{" "}
               </Web3StatusConnect>

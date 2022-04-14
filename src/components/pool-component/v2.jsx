@@ -22,7 +22,7 @@ import { LPSpinner } from "../hooks/polling";
 import promiseRetry from "promise-retry";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { checkForWeb3 } from "../../core/store/actions/web3";
+import { checkForWeb3, connectWallet } from "../../core/store/actions/web3";
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -89,23 +89,21 @@ export default function PoolV2() {
 
   //Experiment
 
-  // const onAccountChange = async () => {
-  //   if (typeof window.tolar !== "undefined") {
-  //     window.tolar.on("accountsChanged", async function (accounts) {
-  //       const account = accounts[0];
-  //       setConnectedAccount(account);
-  //       setAddressLiquidityList([]);
-  //       setLiquidityState(
-  //         <div style={{ color: "white" }}>Fetching your LP balances...</div>
-  //       );
-  //     });
-  //   } else {
-  //     window.addEventListener("load", function () {
-  //       // do things after the DOM loads fully
-  //       alert("Install Taquin wallet to interact with TolarSwap");
-  //     });
-  //   }
-  // };
+  const onAccountChange = async () => {
+    if (typeof window.tolar !== "undefined") {
+      window.tolar.on("accountsChanged", async function () {
+        setAddressLiquidityList([]);
+        setLiquidityState(
+          <div style={{ color: "white" }}>Fetching your LP balances...</div>
+        );
+      });
+    } else {
+      window.addEventListener("load", function () {
+        // do things after the DOM loads fully
+        alert("Install Taquin wallet to interact with TolarSwap");
+      });
+    }
+  };
 
   const removeAddressLiquidity = async (
     addressTokenA,
@@ -367,9 +365,9 @@ export default function PoolV2() {
     );
   };
 
-  // useEffect(() => {
-  //   onAccountChange();
-  // }, []);
+  useEffect(() => {
+    onAccountChange();
+  }, []);
 
   useEffect(() => {
     getAddressLiquidity();
@@ -456,7 +454,7 @@ export default function PoolV2() {
               <Web3StatusGeneric
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(checkForWeb3())
+                  dispatch(connectWallet())
                 }}
               >
                 <TYPE.body color={theme.text3} textAlign="center">
@@ -581,7 +579,9 @@ export default function PoolV2() {
                                             draggable: true,
                                             progress: undefined,
                                           });
-                                          window.location.reload();
+                                          setTimeout(() => {
+                                            window.location.reload();
+                                          }, 5000);
                                         }
                                       },
                                       function (err) {

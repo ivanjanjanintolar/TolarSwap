@@ -20,7 +20,7 @@ import promiseRetry from "promise-retry";
 import CheckMyBalance from "../address-balance";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { checkForWeb3, connectWallet } from "../../core/store/actions/web3";
+import { checkForWeb3, connectWallet, getBalances } from "../../core/store/actions/web3";
 
 export default function SwapCard() {
   const [allowedToSwap, setAllowedToSwap] = useState(true);
@@ -177,6 +177,9 @@ export default function SwapCard() {
                         draggable: true,
                         progress: undefined,
                       });
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 5000);
                     }
                   },
                   function (err) {
@@ -414,7 +417,7 @@ export default function SwapCard() {
                 <Web3StatusConnect
                   style={{ minHeight: "52px" }}
                   disabled={connected}
-                  onClick={() => dispatch(checkForWeb3())}
+                  onClick={() => dispatch(connectWallet())}
                 >
                   {" "}
                   Connect to a wallet{" "}

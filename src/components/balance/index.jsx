@@ -60,9 +60,22 @@ export const liquidityPriceFOrmatter = new Intl.NumberFormat("en-US", {
 
 export default function Balance(props) {
   const tolarBalance = useSelector((state) => state.user.balance);
+  const wrappedTolarBalance = useSelector((state) => state.user.wrappedTolarBalance);
+  const usdcBalance = useSelector((state) => state.user.usdcBalance);
+  const ethereumBalance = useSelector((state) => state.user.ethereumBalance);
   const [priceOfCoin, setPriceOfCoin] = useState("");
   const { values } = useFormikContext();
   const connectedAccount = useSelector((state) => state.user.account);
+  const [balanceState, setBalanceState] = useState(tolarBalance);
+
+  const setCurrency = () => {
+    const currentCurrency = props.values[props.addressFieldName].name;
+    if (currentCurrency === "Tolar")setBalanceState(tolarBalance);
+    if (currentCurrency === "Wrapped Tolar") setBalanceState(wrappedTolarBalance);
+    if (currentCurrency === "USD Coin") setBalanceState(usdcBalance);
+    if (currentCurrency === "Ethereum") setBalanceState(ethereumBalance);
+    console.log(currentCurrency)
+  };
 
   const getPrice = () => {
     const id = props.values[props.addressFieldName].id;
@@ -82,46 +95,59 @@ export default function Balance(props) {
 
   useEffect(() => {
     getPrice();
+    setCurrency();
   }, [values]);
 
   return (
     <>
       {tolarBalance && (
-       <div className="container" style={{display:'flex',flexDirection:'row', color:'white', paddingTop:'5px', height:'5px'}}>
+        <div
+          className="container"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            color: "white",
+            paddingTop: "5px",
+            height: "5px",
+          }}
+        >
           <p>
-              Balance :{" "}
-              {round(tolarBalance / 1000000000000000000, 2)}
-            </p>
-            <HorizontalGap gap={10}/>
-            <StyledBalanceMax  onClick={async (e) => {
-            e.preventDefault();
-            props.setFieldValue(
-              props.currencyFieldName,
-              new BigNumber(tolarBalance).shiftedBy(-18).toFixed(3)
-            );
+            Balance : {round((balanceState ||tolarBalance)/ 1000000000000000000, 2).toFixed(2)}
+          </p>
+          <HorizontalGap gap={10} />
+          <StyledBalanceMax
+            onClick={async (e) => {
+              e.preventDefault();
+              props.setFieldValue(
+                props.currencyFieldName,
+                new BigNumber(usdcBalance).shiftedBy(-18).toFixed(3)
+              );
 
-            const receipt = await getAmountOfOutputTokens(
-              !Number.parseInt(e.target.value),
-              props.values.addressTokenA.address,
-              props.values.addressTokenB.address,
-              connectedAccount
-            );
+              const receipt = await getAmountOfOutputTokens(
+                !Number.parseInt(e.target.value),
+                props.values.addressTokenA.address,
+                props.values.addressTokenB.address,
+                connectedAccount
+              );
 
-            if (receipt.excepted === true) {
-              return;
-            }
+              if (receipt.excepted === true) {
+                return;
+              }
 
-            const [tokenInAmount, tokenOutAmount] = receipt.outputParsed;
-            if (e.target.value === tokenInAmount) {
-              props.setFieldValue("amountOut", tokenOutAmount);
-            }
-          }}><p>(Max)</p></StyledBalanceMax>
-            <HorizontalGap gap={10}/>
-            ~${" "}
-            {priceFormatter
-              .format(priceOfCoin * props.values[props.currencyFieldName])
-              .substring(1)}
-       </div>
+              const [tokenInAmount, tokenOutAmount] = receipt.outputParsed;
+              if (e.target.value === tokenInAmount) {
+                props.setFieldValue("amountOut", tokenOutAmount);
+              }
+            }}
+          >
+            <p>(Max)</p>
+          </StyledBalanceMax>
+          <HorizontalGap gap={10} />
+          ~${" "}
+          {priceFormatter
+            .format(priceOfCoin * props.values[props.currencyFieldName])
+            .substring(1)}
+        </div>
       )}
     </>
   );

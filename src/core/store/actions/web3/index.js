@@ -139,7 +139,7 @@ export const getBalances = (address) => async dispatch => {
             ["uint"],
             ethereumBalance.output
           );
-          store.dispatch({ type: types.ON_WEB3_USDC_BALANCE, payload: ethereumBalanceResult });
+          store.dispatch({ type: types.ON_WEB3_ETH_BALANCE, payload: ethereumBalanceResult });
 
 
 
