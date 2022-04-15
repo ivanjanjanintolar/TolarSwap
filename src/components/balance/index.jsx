@@ -123,7 +123,7 @@ export default function Balance(props) {
           }}
         >
           <p>
-            Balance : {round((balanceState ||tolarBalance)/ 1000000000000000000, 2).toFixed(2)}
+            Balance : {round((balanceState ||wrappedTolarBalance)/ 1000000000000000000, 2).toFixed(2)}
           </p>
           <HorizontalGap gap={10} />
           <StyledBalanceMax

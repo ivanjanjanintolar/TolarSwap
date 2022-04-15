@@ -23,6 +23,7 @@ import CheckMyBalanceTokenAAndB from "../address-liquidity-balance";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { connectWallet } from "../../core/store/actions/web3";
+import { addLiquidityTOL } from "../../utils/functions/state-changing/AddLiquidityTOL";
 
 export default function AddLiquidity() {
   const [approvedTokenA, setApprovedTokenA] = useState(true);
@@ -34,7 +35,7 @@ export default function AddLiquidity() {
 
   const connected = useSelector((state) => state.user.isConnected);
   const connectedAccount = useSelector((state) => state.user.account);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const onValueChangeAmountIn = async (props, e) => {
     if (!isPairExistent) {
@@ -188,42 +189,169 @@ export default function AddLiquidity() {
           amountOfAPerBIfNoPair: "-",
         }}
         onSubmit={async (values, actions) => {
-          const addLiquidityHex = await addLiquidity({
-            ...values,
-            addressTokenA: values.addressTokenA.address,
-            addressTokenB: values.addressTokenB.address,
-            amountADesired: values.amountIn,
-            amountBDesired: values.amountOut,
-            amountAMin: values.amountIn - (10 / 100) * values.amountIn,
-            amountBMin: values.amountOut - (10 / 100) * values.amountOut,
-            account: connectedAccount
-          });
-          window.tolar
-            .request({
-              method: "taq_sendTransaction",
-              params: [
-                {
-                  sender_address: connectedAccount,
-                  receiver_address: RouterAddress,
-                  amount: "0",
-                  gas: 10000000,
-                  gas_price: 1,
-                  data: addLiquidityHex,
-                },
-              ],
-            })
-            .then((result) => {
-              const id = toast.loading("Transaction pending...");
-              try {
-                promiseRetry(function (retry, number) {
-                  const transactionDetails = web3.tolar
-                    .getTransaction(result.txHash)
-                    .catch(retry);
-                  return transactionDetails;
-                }).then(
-                  function (value) {
-                    if (value.excepted) {
-                      console.log(value);
+          // if (
+          //   (values.addressTokenA.name || values.addressTokenB.name) === "Tolar"
+          // ) {
+          //   var addressOfTheToken;
+          //   var amountOfTokenDesired;
+          //   var amountOfTokenMin;
+          //   var amountOfTOLMin;
+
+          //   if (values.addressTokenA.name === "Tolar") {
+          //     addressOfTheToken = values.addressTokenB.address;
+          //     amountOfTokenDesired = values.amountOut;
+          //     amountOfTokenMin =
+          //       values.amountOut - (10 / 100) * values.amountOut;
+          //     amountOfTOLMin = values.amountIn - (10 / 100) * values.amountIn;
+          //   } else if (values.addressTokenB.name === "Tolar") {
+          //     addressOfTheToken = values.addressTokenA.address;
+          //     amountOfTokenDesired = values.amountIn;
+          //     amountOfTokenMin = values.amountIn - (10 / 100) * values.amountIn;
+          //     amountOfTOLMin = values.amountOut - (10 / 100) * values.amountOut;
+          //   }
+          //   const addLiquidityTOLHex = await addLiquidityTOL({
+          //     ...values,
+          //     addressToken: addressOfTheToken,
+          //     amountTokenDesired: amountOfTokenDesired,
+          //     amountTokenMin: amountOfTokenMin,
+          //     amountTOLMin: amountOfTOLMin,
+          //     account: connectedAccount,
+          //   });
+          //   window.tolar
+          //     .request({
+          //       method: "taq_sendTransaction",
+          //       params: [
+          //         {
+          //           sender_address: connectedAccount,
+          //           receiver_address: RouterAddress,
+          //           amount: "0",
+          //           gas: 10000000,
+          //           gas_price: 1,
+          //           data: addLiquidityTOLHex,
+          //         },
+          //       ],
+          //     })
+          //     .then((result) => {
+          //       const id = toast.loading("Transaction pending...");
+          //       try {
+          //         promiseRetry(function (retry, number) {
+          //           const transactionDetails = web3.tolar
+          //             .getTransaction(result.txHash)
+          //             .catch(retry);
+          //           return transactionDetails;
+          //         }).then(
+          //           function (value) {
+          //             if (value.excepted) {
+          //               console.log(value);
+          //               toast.update(id, {
+          //                 render: `Transaction failed!`,
+          //                 type: "error",
+          //                 autoClose: 5000,
+          //                 isLoading: false,
+          //                 hideProgressBar: false,
+          //                 closeOnClick: true,
+          //                 pauseOnHover: true,
+          //                 draggable: true,
+          //                 progress: undefined,
+          //               });
+          //             } else {
+          //               toast.update(id, {
+          //                 render: `Liquidity added successfully!`,
+          //                 type: "success",
+          //                 autoClose: 5000,
+          //                 isLoading: false,
+          //                 hideProgressBar: false,
+          //                 closeOnClick: true,
+          //                 pauseOnHover: true,
+          //                 draggable: true,
+          //                 progress: undefined,
+          //               });
+          //             }
+          //           },
+          //           function (err) {
+          //             toast.update(id, {
+          //               render: `Transaction failed!`,
+          //               type: "error",
+          //               autoClose: 5000,
+          //               isLoading: false,
+          //               hideProgressBar: false,
+          //               closeOnClick: true,
+          //               pauseOnHover: true,
+          //               draggable: true,
+          //               progress: undefined,
+          //             });
+          //           }
+          //         );
+          //       } catch (e) {
+          //         console.log(e);
+          //       }
+          //     })
+          //     .catch((error) => {
+          //       console.log(error);
+          //     });
+          // } else {
+            const addLiquidityHex = await addLiquidity({
+              ...values,
+              addressTokenA: values.addressTokenA.address,
+              addressTokenB: values.addressTokenB.address,
+              amountADesired: values.amountIn,
+              amountBDesired: values.amountOut,
+              amountAMin: values.amountIn - (10 / 100) * values.amountIn,
+              amountBMin: values.amountOut - (10 / 100) * values.amountOut,
+              account: connectedAccount,
+            });
+            window.tolar
+              .request({
+                method: "taq_sendTransaction",
+                params: [
+                  {
+                    sender_address: connectedAccount,
+                    receiver_address: RouterAddress,
+                    amount: "0",
+                    gas: 10000000,
+                    gas_price: 1,
+                    data: addLiquidityHex,
+                  },
+                ],
+              })
+              .then((result) => {
+                const id = toast.loading("Transaction pending...");
+                try {
+                  promiseRetry(function (retry, number) {
+                    const transactionDetails = web3.tolar
+                      .getTransaction(result.txHash)
+                      .catch(retry);
+                    return transactionDetails;
+                  }).then(
+                    function (value) {
+                      if (value.excepted) {
+                        console.log(value);
+                        toast.update(id, {
+                          render: `Transaction failed!`,
+                          type: "error",
+                          autoClose: 5000,
+                          isLoading: false,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                        });
+                      } else {
+                        toast.update(id, {
+                          render: `Liquidity added successfully!`,
+                          type: "success",
+                          autoClose: 5000,
+                          isLoading: false,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                        });
+                      }
+                    },
+                    function (err) {
                       toast.update(id, {
                         render: `Transaction failed!`,
                         type: "error",
@@ -235,41 +363,16 @@ export default function AddLiquidity() {
                         draggable: true,
                         progress: undefined,
                       });
-                    } else {
-                      toast.update(id, {
-                        render: `Liquidity added successfully!`,
-                        type: "success",
-                        autoClose: 5000,
-                        isLoading: false,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                      });
                     }
-                  },
-                  function (err) {
-                    toast.update(id, {
-                      render: `Transaction failed!`,
-                      type: "error",
-                      autoClose: 5000,
-                      isLoading: false,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                    });
-                  }
-                );
-              } catch (e) {
-                console.log(e);
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+                  );
+                } catch (e) {
+                  console.log(e);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          // }
         }}
       >
         {(props) => (

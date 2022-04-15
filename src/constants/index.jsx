@@ -3,13 +3,13 @@ import USDCLogo from "../assets/token-logos/usdc-logo.png";
 import ETHLogo from "../assets/token-logos/eth-logo.png";
 
 export const CRYPTOCURRENCY_LIST = [
-  {
-    address: "",
-    name: "Tolar",
-    symbol: "TOL",
-    logoUrl: TolarLogo,
-    id: "tolar",
-  },
+  // {
+  //   address: "",
+  //   name: "Tolar",
+  //   symbol: "TOL",
+  //   logoUrl: TolarLogo,
+  //   id: "tolar",
+  // },
   {
     address: "54a46ec7d64508a81af16b56292402f1ac5e508c03e3711a39",
     name: "Wrapped Tolar",
