@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CardBody, LightGreyCard } from "../card";
 import { ButtonPink, ButtonPrimary, MiddleButton } from "../button";
 import { Title } from "../typography";
@@ -17,17 +17,15 @@ import CheckAddressPairExistence from "../check-address-pair-existence";
 import { toast } from "react-toastify";
 import BigNumber from "bignumber.js";
 import promiseRetry from "promise-retry";
-import CheckMyBalance from "../address-balance";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { checkForWeb3, connectWallet, getBalances } from "../../core/store/actions/web3";
+import { connectWallet } from "../../core/store/actions/web3";
 
 export default function SwapCard() {
   const [allowedToSwap, setAllowedToSwap] = useState(true);
   const [isPairExistent, setIsPairExistent] = useState(false);
   const [sufficientLiquidity, setSufficientLiquidity] = useState(true);
-  const [isInputHigherThanBalance, setIsInputHigherThanBalance] =
-    useState(false);
+  const isInputHigherThanBalance = useSelector(state=>state.user.inputHigherThanBalance)
   const dispatch = useDispatch();
   const connected = useSelector(state=>state.user.isConnected)
   const connectedAccount = useSelector(state=>state.user.account)
@@ -217,12 +215,6 @@ export default function SwapCard() {
               setIsPairExistent={setIsPairExistent}
               isPairExistent={isPairExistent}
               visible={false}
-            />
-            <CheckMyBalance
-              addressTokenA={props.values.addressTokenA}
-              addressTokenB={props.values.addressTokenB}
-              isInputHigherThanBalance={isInputHigherThanBalance}
-              setIsInputHigherThanBalance={setIsInputHigherThanBalance}
             />
             <CardBody>
               <Title>Swap</Title>

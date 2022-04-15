@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { isNaN, useFormikContext } from "formik";
 import { getPair } from "../../utils/functions/read-only/GetPair";
 import { FactoryAddress, RouterAddress, web3 } from "../../utils/Web3Helper";

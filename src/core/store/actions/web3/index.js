@@ -4,6 +4,7 @@ import { REACT_APP_ENVIRONMENT, REACT_APP_TOLAR_GATEWAY } from '../../../../util
 import { getBalance } from '../../../../utils/functions/read-only/GetBalance';
 import { EthereumAddress,UsdcAddress,WTOLAddress } from '../../../../utils/Web3Helper';
 import { toast } from 'react-toastify';
+import { checkPairsExistence } from '../pools';
 const Web3 = require('@dreamfactoryhr/web3t');
 var web3 = new Web3(REACT_APP_TOLAR_GATEWAY());
 
@@ -14,7 +15,6 @@ export const checkForWeb3 = () => async dispatch => {
         // setupListeners();
         store.dispatch(connectWallet());
     } else {
-         toast("Please Install Taquin wallet to interact with TolarSwap :)");
          store.dispatch({ type: types.ON_WEB3_CHECK, payload: false });
          return
     }
@@ -39,16 +39,21 @@ function setupListeners() {
 }
 
 export const connectWallet = () => async dispatch => {
-
+    
     try {
         window.tolar
             .enable()
             .then((accounts) => {
                 if ((REACT_APP_ENVIRONMENT() === 'mainnet') && (window.tolar.networkVersion !== 'mainnet')) {
                     store.dispatch({ type: types.ON_WEB3_ACCOUNT_FAIL, payload: { err_msg: { errorType: '0', detail: 'Molimo, prebacite se na mrežu MainNet' }, toast_msg: 'Prebacite Taquin Wallet na MainNet.' } });
-                } else if ((REACT_APP_ENVIRONMENT() === 'testnet') && (window.tolar.networkVersion !== 'testnet')) {
-                    store.dispatch({ type: types.ON_WEB3_ACCOUNT_FAIL, payload: { err_msg: { errorType: '0', detail: 'Molimo, prebacite se na mrežu TestNet' }, toast_msg: 'Prebacite Taquin Wallet na TestNet.' } });
-                } else {
+                // } else if ((REACT_APP_ENVIRONMENT() === 'testnet') && (window.tolar.networkVersion !== 'testnet')) {
+                //     store.dispatch({ type: types.ON_WEB3_ACCOUNT_FAIL, payload: { err_msg: { errorType: '0', detail: 'Molimo, prebacite se na mrežu TestNet' }, toast_msg: 'Prebacite Taquin Wallet na TestNet.' } });
+                   
+                // } 
+                //  else if ((REACT_APP_ENVIRONMENT() === 'staging-gpc') && (window.tolar.networkVersion !== 'staging-gcp')) {
+                //      store.dispatch({ type: types.ON_WEB3_ACCOUNT_FAIL, payload: { err_msg: { errorType: '0', detail: 'Molimo, prebacite se na mrežu Staging' }, toast_msg: 'Prebacite Taquin Wallet na Staging.' } });
+                  }
+                else {
                     handleAccountsChanged(accounts);
                     setupListeners();
                 }
@@ -61,6 +66,7 @@ export const connectWallet = () => async dispatch => {
             });
         web3 = new Web3(window.tolar);
     } catch (error) {
+        toast("Please Install Taquin wallet to interact with TolarSwap :)");
         console.log(error);
     }
 }
@@ -72,6 +78,7 @@ function handleAccountsChanged(accounts) {
     } else if (accounts[0]) {
         store.dispatch({ type: types.ON_WEB3_ACCOUNT, payload: accounts[0] });
         store.dispatch(getBalances(accounts[0]));
+        store.dispatch(checkPairsExistence(accounts[0]))
         // store.dispatch(GetTransactions(accounts[0]));
     }
 }

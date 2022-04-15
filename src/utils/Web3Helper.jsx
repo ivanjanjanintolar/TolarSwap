@@ -1,6 +1,6 @@
-import Web3 from "@dreamfactoryhr/web3t";
-
-export const web3 = new Web3('https://testnet-gateway.dev.tolar.io');
+import { REACT_APP_TOLAR_GATEWAY } from "./common";
+const Web3 = require('@dreamfactoryhr/web3t');
+export const web3 = new Web3(REACT_APP_TOLAR_GATEWAY());
 
 export const tolar = web3.tolar;
 

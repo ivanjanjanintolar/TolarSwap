@@ -22,7 +22,7 @@ import { liquidityPriceFOrmatter } from "../balance";
 import CheckMyBalanceTokenAAndB from "../address-liquidity-balance";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { checkForWeb3, connectWallet } from "../../core/store/actions/web3";
+import { connectWallet } from "../../core/store/actions/web3";
 
 export default function AddLiquidity() {
   const [approvedTokenA, setApprovedTokenA] = useState(true);

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useFormikContext } from "formik";
 import axios from "axios";
-import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
 import { getAmountOfOutputTokens } from "../../utils/functions/read-only/GetAmountsOut";
 import { useSelector } from "react-redux";
 import { HorizontalGap } from "../../style";
 import { round } from "../../utils/common";
+import store from "../../core/store/store";
+import * as types from '../../core/store/actions/web3/types'
 
 const StyledBalanceMax = styled.button`
   background-color: transparent;
@@ -74,7 +75,6 @@ export default function Balance(props) {
     if (currentCurrency === "Wrapped Tolar") setBalanceState(wrappedTolarBalance);
     if (currentCurrency === "USD Coin") setBalanceState(usdcBalance);
     if (currentCurrency === "Ethereum") setBalanceState(ethereumBalance);
-    console.log(currentCurrency)
   };
 
   const getPrice = () => {
@@ -97,6 +97,17 @@ export default function Balance(props) {
     getPrice();
     setCurrency();
   }, [values]);
+
+  useEffect(() => {
+   
+    if(props.values.amountIn > round(balanceState /1000000000000000000, 2)){
+      store.dispatch({ type: types.ON_INPUT_HIGHER_THAN_BALANCE, payload: true });
+    } else {
+      store.dispatch({ type: types.ON_INPUT_HIGHER_THAN_BALANCE, payload: false });
+    }
+
+  }, [values]);
+
 
   return (
     <>

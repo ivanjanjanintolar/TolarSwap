@@ -23,13 +23,17 @@ import PoolV2 from "./components/pool-component/v2";
 import AddLiquidity from "./components/liquidity";
 import { useSelector, useDispatch } from "react-redux";
 import { checkForWeb3 } from "./core/store/actions/web3";
+import { REACT_APP_ENVIRONMENT } from "./utils/common";
+import { checkPairsExistence } from "./core/store/actions/pools";
 
 function App() {
   const blockNumber = useBlockNumber();
   const [isMounting, setIsMounting] = useState(false);
-  const user = useSelector(state=>state.user)
+  const connectedAccount = useSelector(state=>state.user.account)
   const dispatch = useDispatch()
+  
   useEffect(()=>{
+    console.log(`environment: ${REACT_APP_ENVIRONMENT()}`);
     dispatch(checkForWeb3())
   },[])
 

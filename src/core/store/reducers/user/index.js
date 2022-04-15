@@ -1,7 +1,3 @@
-import {
-  GET_TRANSACTIONS_SUCCESS,
-  UPDATE_PENDING_TX,
-} from "../../actions/user/types";
 import * as types from "../../actions/web3/types";
 
 const INITIAL_STATE = {
@@ -12,10 +8,7 @@ const INITIAL_STATE = {
   wrappedTolarBalance: null,
   usdcBalance: null,
   ethereumBalance: null,
-  nfts: [],
-  transactions: {},
-  claimPending: false,
-  txPending: false,
+  inputHigherThanBalance : false
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -68,31 +61,12 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         ethereumBalance: action.payload,
       };
-
-    case types.ON_TOKENS_OWNED_BALANCE:
-      return {
-        ...state,
-        nfts: [...state.nfts, ...action.payload],
-      };
-
-    case types.ON_TOKENS_OWNED_RESET:
-      return {
-        ...state,
-        nfts: [],
-      };
-
-    case GET_TRANSACTIONS_SUCCESS:
-      return {
-        ...state,
-        transactions: { ...state.transactions, ...action.payload.data },
-      };
-
-    case UPDATE_PENDING_TX:
-      return {
-        ...state,
-        claimPending: action.payload.claimProcessing,
-        txPending: action.payload.txProcessing,
-      };
+      
+      case types.ON_INPUT_HIGHER_THAN_BALANCE:
+        return {
+          ...state,
+          inputHigherThanBalance: action.payload,
+        };
 
     default:
       return state;
