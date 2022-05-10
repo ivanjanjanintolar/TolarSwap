@@ -7,8 +7,8 @@ Once inside WebApp directory run npm install to install the dependencies.
 
 To link the Web Interface with your smart contracts you need to :
 
-1)- Replace the addresses inside "./src/utils/Web3Helper" file with your addresses.\
-2)- Replace the addresses inside "./src/constants/index" file with your deployed token contracts.
+1)- Replace the addresses inside `./src/utils/Web3Helper` file with your addresses.\
+2)- Replace the addresses inside `./src/constants/index` file with your deployed token contracts.
 
 
 
@@ -18,7 +18,7 @@ To add new tokens to the token list you just need to create an object of that to
 
 If you wish to have them exported from Web3Helper you can create an instance inside Web3Helper as well.
 
-To display the balances of the certain token add it inside "./src/components/balance/index" file following the examples.
+To display the balances of the certain token add it inside `./src/components/balance/index` file following the examples.
 
 
 ## Available Scripts

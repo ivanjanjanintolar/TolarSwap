@@ -9,7 +9,7 @@ Navigate inside core or periphery directory and run :
 Compiles all the contracts and produces build folder with all the compiled json files.
 
 
-## Deployment
+# Deployment
 
 When you will need to deploy smart contracts to the network you can do so by following the next steps :
 
