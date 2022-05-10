@@ -6,7 +6,7 @@ Navigate inside core or periphery directory and run :
 
 ### `truffle compile`
 
-Compiles all the contracts and produces build folder with all the compiled json files.\
+Compiles all the contracts and produces build folder with all the compiled json files.
 
 
 ## Deployment
@@ -21,7 +21,7 @@ When you will need to deploy smart contracts to the network you can do so by fol
 
     - Now you can compile the smart contracts and inside "./core/build/contracts/UniswapV2Factory" file you can find the bytecode to deploy to the network.
 
-    - Once deployed call the "INIT_CODE_PAIR_HASH" on the smart contract and save the output value to use it for deployment of Periphery smart contracts
+    - Once deployed call the "INIT_CODE_PAIR_HASH" on the smart contract and save the output value to use it for deployment of Periphery smart contracts.
 
 2)- Deployment of the Wrapped tolar
 
@@ -39,5 +39,5 @@ When you will need to deploy smart contracts to the network you can do so by fol
 
     - Once compiled you can find the bytecode inside "./periphery/build/contracts/UniswapV2Router02" file and deploy it to the network.
 
-4)- Deploying test tokens 
+4)- Deploying test tokens\
     - If you want to deploy some test tokens to try out functionalities there are 2 ERC20 tokens created inside core directory called "USDC and Ethereum" just deploy their bytecode to network. It will mint to the owner 100,000 tokens each.
