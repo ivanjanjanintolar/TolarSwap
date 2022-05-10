@@ -25,7 +25,7 @@ When you will need to deploy smart contracts to the network you can do so by fol
 
 2)- Deployment of the Wrapped tolar
 
-    - To deploy Wrapped tolar just navigate inside "./periphery/build/contracts/WTOL" file and take it's bytecode and deploy it to the network.
+    - To deploy Wrapped tolar just navigate inside ./periphery/build/contracts/WTOL file and take it's bytecode and deploy it to the network.
 
 3)- Deployment of the UniswapV2Router02 
 

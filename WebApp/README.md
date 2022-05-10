@@ -14,7 +14,7 @@ To link the Web Interface with your smart contracts you need to :
 
 # Adding new tokens to the token list
 
-To add new tokens to the token list you just need to create an object of that token with deployed version inside "./src/constants/index" file.
+To add new tokens to the token list you just need to create an object of that token with deployed version inside `./src/constants/index` file.
 
 If you wish to have them exported from Web3Helper you can create an instance inside Web3Helper as well.
 
