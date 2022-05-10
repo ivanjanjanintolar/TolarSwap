@@ -3,7 +3,7 @@
 This project contains and is divided in 2 parts : 
 
 1)- Smart contracts directory .\
-    Contains : \ 
+    Contains : .\ 
     - Core smart contracts of the TolarSwap protocol. \
     - Periphery smart contracts of the TolarSwap protocol.
     
