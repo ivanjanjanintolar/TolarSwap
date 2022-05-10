@@ -1,0 +1,21 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@dreamfactoryhr/web3t": "^1.0.2",
+    "@openzeppelin/contracts": "^2.5.1",
+    "ethers": "^5.4.6",
+    "web3": "^1.5.2"
+  }
+}

@@ -1,0 +1,324 @@
+{
+  "contractName": "IUniswapV1Factory",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "getExchange",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"getExchange\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/interfaces/V1/IUniswapV1Factory.sol\":\"IUniswapV1Factory\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[]},\"sources\":{\"project:/contracts/interfaces/V1/IUniswapV1Factory.sol\":{\"keccak256\":\"0x2a554e26d874fa4b10736f2e2ac1ba6253cd1ad08a97bd941cb0a41015565589\",\"urls\":[\"bzz-raw://bbe29db0ebf08621cb4211219c02262be9c7510fe03bab94f849a38993f957d6\",\"dweb:/ipfs/QmTutAVpjg925m4JLqHTvukdTyoTr77FotAUAA2AzGug1f\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity >=0.5.0;\n\ninterface IUniswapV1Factory {\n    function getExchange(address) external view returns (address);\n}\n",
+  "sourcePath": "C:\\Users\\Ivan\\Projekti\\playground\\TolarSwap\\SmartContracts\\periphery\\contracts\\interfaces\\V1\\IUniswapV1Factory.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/interfaces/V1/IUniswapV1Factory.sol",
+    "exportedSymbols": {
+      "IUniswapV1Factory": [
+        6325
+      ]
+    },
+    "id": 6326,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6317,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:18"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 6325,
+        "linearizedBaseContracts": [
+          6325
+        ],
+        "name": "IUniswapV1Factory",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "06f2bf62",
+            "id": 6324,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getExchange",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6320,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6319,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6324,
+                  "src": "81:7:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6318,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "81:7:18",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "80:9:18"
+            },
+            "returnParameters": {
+              "id": 6323,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6322,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6324,
+                  "src": "113:7:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6321,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "113:7:18",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "112:9:18"
+            },
+            "scope": 6325,
+            "src": "60:62:18",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6326,
+        "src": "26:98:18"
+      }
+    ],
+    "src": "0:125:18"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "project:/contracts/interfaces/V1/IUniswapV1Factory.sol",
+      "exportedSymbols": {
+        "IUniswapV1Factory": [
+          6325
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.5",
+            ".0"
+          ]
+        },
+        "id": 6317,
+        "name": "PragmaDirective",
+        "src": "0:24:18"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            6325
+          ],
+          "name": "IUniswapV1Factory",
+          "scope": 6326
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "documentation": null,
+              "functionSelector": "06f2bf62",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getExchange",
+              "overrides": null,
+              "scope": 6325,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 6324,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 6318,
+                        "name": "ElementaryTypeName",
+                        "src": "81:7:18"
+                      }
+                    ],
+                    "id": 6319,
+                    "name": "VariableDeclaration",
+                    "src": "81:7:18"
+                  }
+                ],
+                "id": 6320,
+                "name": "ParameterList",
+                "src": "80:9:18"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 6324,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 6321,
+                        "name": "ElementaryTypeName",
+                        "src": "113:7:18"
+                      }
+                    ],
+                    "id": 6322,
+                    "name": "VariableDeclaration",
+                    "src": "113:7:18"
+                  }
+                ],
+                "id": 6323,
+                "name": "ParameterList",
+                "src": "112:9:18"
+              }
+            ],
+            "id": 6324,
+            "name": "FunctionDefinition",
+            "src": "60:62:18"
+          }
+        ],
+        "id": 6325,
+        "name": "ContractDefinition",
+        "src": "26:98:18"
+      }
+    ],
+    "id": 6326,
+    "name": "SourceUnit",
+    "src": "0:125:18"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2022-05-10T21:14:24.467Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
