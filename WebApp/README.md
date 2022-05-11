@@ -1,6 +1,6 @@
 # Installation 
 
-Once inside WebApp directory run npm install to install the dependencies.
+Once inside WebApp directory run `npm install` to install the dependencies.
 
 
 # Linking the Web interface with your smart contracts
