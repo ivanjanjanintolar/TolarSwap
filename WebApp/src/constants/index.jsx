@@ -25,7 +25,7 @@ export const CRYPTOCURRENCY_LIST = [
     id: "usd-coin",
   },
   {
-    address: "549fc2ee2aad31ef25a7de33e302a52daa6bf5aeba453249d7",
+    address: "54d84c6897e99ccfdfedc9880060ab981dc844e5ab526d6fb6",
     name: "Ethereum",
     symbol: "ETH",
     logoUrl: ETHLogo,

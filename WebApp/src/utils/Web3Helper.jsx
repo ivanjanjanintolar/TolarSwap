@@ -16,6 +16,6 @@ export const WTOLAddress = "54a46ec7d64508a81af16b56292402f1ac5e508c03e3711a39";
 //UniswapV2Router02 contract
 export const RouterAddress = "541e7f4c5add01d879d1c0ca69ea902f7257935284c595f840";
 
-//Test tokens
-export const TestToken1 = "549fc2ee2aad31ef25a7de33e302a52daa6bf5aeba453249d7";
-export const TestToken2 = "5474ba2fe5e81081d9347bbcca90d8e90e139fcdbb10ea2120";
+//Test ERC20 tokens
+export const EthereumAddress = "54d84c6897e99ccfdfedc9880060ab981dc844e5ab526d6fb6";
+export const UsdcAddress = "5474ba2fe5e81081d9347bbcca90d8e90e139fcdbb10ea2120";

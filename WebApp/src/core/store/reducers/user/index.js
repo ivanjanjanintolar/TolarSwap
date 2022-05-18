@@ -8,7 +8,9 @@ const INITIAL_STATE = {
   wrappedTolarBalance: null,
   usdcBalance: null,
   ethereumBalance: null,
-  inputHigherThanBalance : false
+  inputHigherThanBalance: false,
+  hasLiquidity: null,
+  liquidityList: [],
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -34,9 +36,10 @@ export default (state = INITIAL_STATE, action) => {
         isConnected: false,
         account: null,
         balance: null,
-        wrappedTolarBalance:null,
-        usdcBalance:null,
-        ethereumBalance:null,
+        wrappedTolarBalance: null,
+        usdcBalance: null,
+        ethereumBalance: null,
+        liquidityList: [],
       };
 
     case types.ON_WEB3_BALANCE:
@@ -61,12 +64,18 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         ethereumBalance: action.payload,
       };
-      
-      case types.ON_INPUT_HIGHER_THAN_BALANCE:
-        return {
-          ...state,
-          inputHigherThanBalance: action.payload,
-        };
+
+    case types.ON_INPUT_HIGHER_THAN_BALANCE:
+      return {
+        ...state,
+        inputHigherThanBalance: action.payload,
+      };
+
+    case types.ON_ADDRESS_LIQUIDITY:
+      return {
+        ...state,
+        liquidityList: action.payload,
+      };
 
     default:
       return state;

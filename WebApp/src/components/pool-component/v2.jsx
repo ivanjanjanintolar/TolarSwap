@@ -10,14 +10,12 @@ import { Text } from "rebass";
 import { Link } from "react-router-dom";
 import { Card } from "../card";
 import { Web3StatusGeneric } from "../header";
-import { web3, FactoryAddress, RouterAddress } from "../../utils/Web3Helper";
-import abi from "ethereumjs-abi";
+import { web3, RouterAddress } from "../../utils/Web3Helper";
 import { long, short } from "../../utils/AddressCalculator";
 import { ListItemButton } from "@mui/material";
 import { BigNumber } from "bignumber.js";
 import { removeLiquidity } from "../../utils/functions/state-changing/RemoveLiquidity";
 import { approveSpendLimit } from "../../utils/functions/state-changing/ApproveSpendLimit";
-import { checkForAllowance } from "../../utils/functions/read-only/CheckForAllowance";
 import { LPSpinner } from "../hooks/polling";
 import promiseRetry from "promise-retry";
 import { toast } from "react-toastify";
@@ -80,30 +78,13 @@ const ResponsiveButtonSecondary = styled(ButtonSecondary)`
 export default function PoolV2() {
   const connected = useSelector(state=>state.user.isConnected)
   const connectedAccount = useSelector(state=>state.user.account)
+  const addressHasLiquidity = useSelector(state=>state.user.hasLiquidity)
+  const addressLiquidityList = useSelector(state=>state.user.liquidityList)
   const dispatch = useDispatch()
-  const [addressLiquidityList, setAddressLiquidityList] = useState([]);
   const [isMounting, setIsMounting] = useState(false);
   const [liquidityState, setLiquidityState] = useState(
     <div style={{ color: "white" }}>Fetching your LP balances...</div>
   );
-
-  //Experiment
-
-  const onAccountChange = async () => {
-    if (typeof window.tolar !== "undefined") {
-      window.tolar.on("accountsChanged", async function () {
-        setAddressLiquidityList([]);
-        setLiquidityState(
-          <div style={{ color: "white" }}>Fetching your LP balances...</div>
-        );
-      });
-    } else {
-      window.addEventListener("load", function () {
-        // do things after the DOM loads fully
-        alert("Install Taquin wallet to interact with TolarSwap");
-      });
-    }
-  };
 
   const removeAddressLiquidity = async (
     addressTokenA,
@@ -192,192 +173,15 @@ export default function PoolV2() {
       });
   };
 
-  const getAddressLiquidity = async () => {
-
-    console.log('web3-tolar.tryCall', web3.tolar.tryCallTransaction)
-
-    const pairsLength = abi.simpleEncode("allPairsLength()");
-
-    const quoteHex = pairsLength.toString("hex");
-
-    const quoteOutput = await web3.tolar.tryCallTransaction(
-      connectedAccount,
-      FactoryAddress,
-      0,
-      600000,
-      1,
-      quoteHex,
-      await web3.tolar.getNonce(connectedAccount)
-    );
-
-    const { 0: quoteB } = web3.eth.abi.decodeParameters(
-      ["uint"],
-      quoteOutput.output
-    );
-
-    const addressLiquidity = [];
-
-    for (let i = 0; i < quoteB; i++) {
-      const getPairAddress = abi.simpleEncode("allPairs(uint):(address)", i);
-
-      const getPairAddressHex = getPairAddress.toString("hex");
-
-      const pairsAddress = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        FactoryAddress,
-        0,
-        600000,
-        1,
-        getPairAddressHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: addressOutput } = web3.eth.abi.decodeParameters(
-        ["address"],
-        pairsAddress.output
-      );
-
-      const token0 = abi.simpleEncode("token0()");
-      const token0Hex = token0.toString("hex");
-
-      const token0Name = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(addressOutput),
-        0,
-        600000,
-        1,
-        token0Hex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: token0Address } = web3.eth.abi.decodeParameters(
-        ["address"],
-        token0Name.output
-      );
-
-      const token1 = abi.simpleEncode("token1()");
-      const token1Hex = token1.toString("hex");
-
-      const token1Name = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(addressOutput),
-        0,
-        600000,
-        1,
-        token1Hex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: token1Address } = web3.eth.abi.decodeParameters(
-        ["address"],
-        token1Name.output
-      );
-
-      const getToken0Symbol = abi.simpleEncode("symbol()");
-      const getToken0SymbolHex = getToken0Symbol.toString("hex");
-
-      const token0Symbol = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(token0Address),
-        0,
-        600000,
-        1,
-        getToken0SymbolHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: tokenSymbol } = web3.eth.abi.decodeParameters(
-        ["string"],
-        token0Symbol.output
-      );
-
-      const getToken1Symbol = abi.simpleEncode("symbol()");
-      const getToken1SymbolHex = getToken1Symbol.toString("hex");
-
-      const token1Symbol = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(token1Address),
-        0,
-        600000,
-        1,
-        getToken1SymbolHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: tokenSymbol1 } = web3.eth.abi.decodeParameters(
-        ["string"],
-        token1Symbol.output
-      );
-
-      const balanceOf = abi.simpleEncode(
-        "balanceOf(address):(uint)",
-        short(connectedAccount)
-      );
-      const balanceOfHex = balanceOf.toString("hex");
-
-      const getBalance = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(addressOutput),
-        0,
-        600000,
-        1,
-        balanceOfHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: balanceOutput } = web3.eth.abi.decodeParameters(
-        ["uint"],
-        getBalance.output
-      );
-
-      const allowance = await checkForAllowance(connectedAccount);
-
-      const receipt = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(addressOutput).toLowerCase(),
-        0,
-        600000,
-        1,
-        allowance,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: resultSpendLimit } = web3.eth.abi.decodeParameters(
-        ["uint256"],
-        receipt.output
-      );
-
-      if (balanceOutput > 0) {
-        addressLiquidity.push({
-          addressOfThePair: addressOutput,
-          LPTokens: balanceOutput,
-          tokenASymbol: tokenSymbol,
-          tokenBSymbol: tokenSymbol1,
-          tokenAAdress: token0Address,
-          tokenBAdress: token1Address,
-          pairAddress: addressOutput,
-          spendLimit: resultSpendLimit,
-          myLPTokensBalance: balanceOutput,
-        });
-      }
-    }
-    setAddressLiquidityList(addressLiquidity);
-    setIsMounting(false);
-    setLiquidityState(
-      <div style={{ color: "white" }}>No liquidity found. </div>
-    );
-  };
-
-  useEffect(() => {
-    onAccountChange();
-  }, []);
-
-  useEffect(() => {
-    getAddressLiquidity();
-  }, [connectedAccount]);
-
   useEffect(() => {
     setIsMounting(true);
+    if(addressHasLiquidity === false){
+      setLiquidityState(
+        <div style={{ color: "white" }}>No liquidity found. </div>
+      );
+      setIsMounting(false);
+    }
+    console.log(addressLiquidityList.length)
   }, [connectedAccount]);
 
   return (
