@@ -18,7 +18,13 @@ To add new tokens to the token list you just need to create an object of that to
 
 If you wish to have them exported from Web3Helper you can create an instance inside Web3Helper as well.
 
-To display the balances of the certain token add it inside `./src/components/balance/index` file following the examples.
+To display the balances of the certain token you will need to : 
+
+1)- Add it's balance state to the initial state inside `.src/core/store/reducers/user/index` file following the examples. 
+
+2)- Fetch the balance of the selected token inside `.src/core/store/actions/web3/index` file following the examples.
+
+3)- Add it inside `./src/components/balance/index` file following the examples.
 
 
 ## Available Scripts

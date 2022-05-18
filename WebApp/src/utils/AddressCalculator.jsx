@@ -1,13 +1,14 @@
 import { web3 } from "./Web3Helper";
 
-export function short(string) {
+export function short(address) {
   const arr = [];
 
-  for (let i = 2; i < string.length - 8; i++) {
-    arr.push(string[i]);
+  for (let i = 2; i < address.length - 8; i++) {
+    arr.push(address[i]);
   }
 
-  return "0x" + arr.join("");
+  const ethAddress = "0x" + arr.join("")
+  return ethAddress;
 }
 
 export function long(string) {

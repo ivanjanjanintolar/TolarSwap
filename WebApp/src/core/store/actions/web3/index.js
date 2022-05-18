@@ -2,9 +2,8 @@ import store from '../../store';
 import * as types from './types';
 import { REACT_APP_ENVIRONMENT, REACT_APP_TOLAR_GATEWAY } from '../../../../utils/common';
 import { getBalance } from '../../../../utils/functions/read-only/GetBalance';
-import { EthereumAddress,UsdcAddress,WTOLAddress } from '../../../../utils/Web3Helper';
+import { TestToken1,TestToken2,WTOLAddress } from '../../../../utils/Web3Helper';
 import { toast } from 'react-toastify';
-import { checkPairsExistence } from '../pools';
 const Web3 = require('@dreamfactoryhr/web3t');
 var web3 = new Web3(REACT_APP_TOLAR_GATEWAY());
 
@@ -113,9 +112,9 @@ export const getBalances = (address) => async dispatch => {
 
         //Fetch usdc balance
 
-        const usdcBalance = await web3.tolar.tryCallTransaction(
+        const testtoken2Balance = await web3.tolar.tryCallTransaction(
             address,
-            UsdcAddress,
+            TestToken2,
             0,
             600000,
             1,
@@ -123,18 +122,18 @@ export const getBalances = (address) => async dispatch => {
             await web3.tolar.getNonce(address)
           );
     
-          const { 0: usdcBalanceResult } = web3.eth.abi.decodeParameters(
+          const { 0: testtoken2BalanceResult } = web3.eth.abi.decodeParameters(
             ["uint"],
-            usdcBalance.output
+            testtoken2Balance.output
           );
-          store.dispatch({ type: types.ON_WEB3_USDC_BALANCE, payload: usdcBalanceResult });
+          store.dispatch({ type: types.ON_WEB3_USDC_BALANCE, payload: testtoken2BalanceResult });
 
         //Fetch ethereum balance
 
 
-        const ethereumBalance = await web3.tolar.tryCallTransaction(
+        const testtoken1Balance = await web3.tolar.tryCallTransaction(
             address,
-            EthereumAddress,
+            TestToken1,
             0,
             600000,
             1,
@@ -142,11 +141,11 @@ export const getBalances = (address) => async dispatch => {
             await web3.tolar.getNonce(address)
           );
     
-          const { 0: ethereumBalanceResult } = web3.eth.abi.decodeParameters(
+          const { 0: testtoken1BalanceResult } = web3.eth.abi.decodeParameters(
             ["uint"],
-            ethereumBalance.output
+            testtoken1Balance.output
           );
-          store.dispatch({ type: types.ON_WEB3_ETH_BALANCE, payload: ethereumBalanceResult });
+          store.dispatch({ type: types.ON_WEB3_ETH_BALANCE, payload: testtoken1BalanceResult });
 
 
 
