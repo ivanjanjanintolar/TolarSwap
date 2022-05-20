@@ -11,21 +11,22 @@ export function short(address) {
   return ethAddress;
 }
 
-export function long(string) {
+export function long(address) {
   const arr = [];
 
-var sha3x1 = web3.utils.sha3(string).toString()
+var sha3x1 = web3.utils.sha3(address).toString()
 var sha3x2 = web3.utils.sha3(sha3x1).toString()
 
 
 
-  for (let i = 2; i < string.length; i++) {
-    arr.push(string[i]);
+  for (let i = 2; i < address.length; i++) {
+    arr.push(address[i]);
   }
 
   for  (let k = sha3x2.length-8; k < sha3x2.length; k++) {
     arr.push(sha3x2[k]);
   }
 
-  return "54" + arr.join("");
+  const tolAddress = "54" + arr.join("");
+  return tolAddress;
 }
