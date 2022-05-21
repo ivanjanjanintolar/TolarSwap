@@ -181,7 +181,6 @@ export default function PoolV2() {
       );
       setIsMounting(false);
     }
-    console.log(addressLiquidityList.length)
   }, [connectedAccount]);
 
   return (

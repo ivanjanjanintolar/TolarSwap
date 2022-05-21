@@ -63,10 +63,10 @@ export const addLiquidity = async ({
     [
       short(addressTokenA),
       short(addressTokenB),
-      new BigNumber(amountADesired).shiftedBy(18),
-      new BigNumber(amountBDesired).shiftedBy(18),
-      new BigNumber(amountAMin).shiftedBy(18),
-      new BigNumber(amountBMin).shiftedBy(18),
+      new BigNumber(amountADesired).shiftedBy(18).toString(),
+      new BigNumber(amountBDesired).shiftedBy(18).toString(),
+      new BigNumber(amountAMin).shiftedBy(18).toString(),
+      new BigNumber(amountBMin).shiftedBy(18).toString(),
       short(account),
       timeDelay,
     ]

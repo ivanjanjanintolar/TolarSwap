@@ -8,7 +8,7 @@ export const getAmountOfInputTokens = async (
   outputToken,
   connectedAccount
 ) => {
-  const amountHex = await web3.eth.abi.encodeFunctionCall(
+  const encoded = web3.eth.abi.encodeFunctionCall(
     {
       name: "getAmountsOut",
       type: "function",
@@ -26,30 +26,10 @@ export const getAmountOfInputTokens = async (
       ],
     },
     [
-      new BigNumber(amount).shiftedBy(18),
+      new BigNumber(amount).shiftedBy(18).toString(),
       [short(inputToken), short(outputToken)],
     ]
   );
 
-  const receipt = await web3.tolar.tryCallTransaction(
-    connectedAccount,
-    RouterAddress,
-    0,
-    600000,
-    1,
-    amountHex,
-    await web3.tolar.getNonce(connectedAccount)
-  );
-
-  const { 0: outputParsed } = web3.eth.abi.decodeParameters(
-    ["uint256[]"],
-    receipt.output
-  );
-
-  return {
-    ...receipt,
-    outputParsed: (outputParsed || []).map(
-      (value) => +new BigNumber(value).shiftedBy(-18).toFixed(3)
-    ),
-  };
+  return encoded
 };

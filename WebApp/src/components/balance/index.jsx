@@ -108,7 +108,6 @@ export default function Balance(props) {
       store.dispatch({ type: types.ON_INPUT_HIGHER_THAN_BALANCE, payload: false });
     }
 
-    console.log(tolarBalance,wrappedTolarBalance,ethereumBalance,usdcBalance)
 
   }, [values]);
 

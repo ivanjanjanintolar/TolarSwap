@@ -56,8 +56,8 @@ export const removeLiquidity = async (
       addressTokenA.toLowerCase(),
       addressTokenB.toLowerCase(),
       liquidity,
-      new BigNumber(1).shiftedBy(18),
-      new BigNumber(1).shiftedBy(18),
+      new BigNumber(1).shiftedBy(18).toString(),
+      new BigNumber(1).shiftedBy(18).toString(),
       short(connectedAccount),
       timeDelay,
     ]

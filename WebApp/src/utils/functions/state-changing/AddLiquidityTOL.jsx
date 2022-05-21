@@ -50,9 +50,9 @@ export const addLiquidityTOL = async ({
     },
     [
       short(addressToken),
-      new BigNumber(amountTokenDesired).shiftedBy(18),
-      new BigNumber(amountTokenMin).shiftedBy(18),
-      new BigNumber(amountTOLMin).shiftedBy(18),
+      new BigNumber(amountTokenDesired).shiftedBy(18).toString(),
+      new BigNumber(amountTokenMin).shiftedBy(18).toString(),
+      new BigNumber(amountTOLMin).shiftedBy(18).toString(),
       short(account),
       timeDelay,
     ]

@@ -21,6 +21,8 @@ import BigNumber from "bignumber.js";
 import { quote } from "../../utils/functions/read-only/Quote";
 import { debounce } from "lodash";
 import { useSelector } from "react-redux";
+import * as types from "../../core/store/actions/web3/types";
+import store from "../../core/store/store";
 
 export const InitializePoolText = styled.div`
   box-sizing: border-box;
@@ -36,94 +38,178 @@ function CheckAddressPairExistence(props) {
   // Grab values and submitForm from context
   const { values, setFieldValue } = useFormikContext();
 
-  const connectedAccount = useSelector(state=>state.user.account)
+  const connectedAccount = useSelector((state) => state.user.account);
+  const pairAddress = useSelector((state) => state.pairInfo.pairsAddress);
+  // const getAmountInReceipt = useSelector(state=>state.pairInfo.amountInReceipt)
+  // const getAmountOutReceipt = useSelector(state=>state.pairInfo.getAmountOutReceipt)
+  const tokOutAmount = useSelector((state) => state.pairInfo.amountOut);
+  const tokInAmount = useSelector((state) => state.pairInfo.amountIn);
+  const scBalanceOfTokenAA = useSelector(
+    (state) => state.pairInfo.SCBalanceOfTokenA
+  );
+  const scBalanceOfTokenBB = useSelector(
+    (state) => state.pairInfo.SCBalanceOfTokenB
+  );
+  const totalSupp = useSelector((state) => state.pairInfo.totalSupply);
+  const addrBalance = useSelector((state) => state.pairInfo.addressBalance);
 
   const checkAddressPairExistence = async (addressTokenA, addressTokenB) => {
+    const nonce = await web3.tolar.getNonce(connectedAccount);
+
     try {
       const getPairHex = await getPair(
         addressTokenA.address,
         addressTokenB.address
       );
 
-      const receipt = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        FactoryAddress,
-        0,
-        600000,
-        1,
-        getPairHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          FactoryAddress,
+          0,
+          600000,
+          1,
+          getPairHex,
+          nonce
+        )
+        .then((receipt) => {
+          const { 0: result } = web3.eth.abi.decodeParameters(
+            ["address"],
+            receipt.output
+          );
 
-      const amountOutResponse = await getAmountOfOutputTokens(
-        1,
-        addressTokenA.address,
-        addressTokenB.address,
-        connectedAccount
-      );
-
-      const amountInResponse = await getAmountOfInputTokens(
-        1,
-        addressTokenB.address,
-        addressTokenA.address,
-        connectedAccount
-      );
-
-      const { 0: result } = web3.eth.abi.decodeParameters(
-        ["address"],
-        receipt.output
-      );
+          store.dispatch({ type: types.ON_GET_PAIRS_ADDRESS, payload: result });
+        });
 
       const getSCBalanceOfTokenA = abi.simpleEncode(
         "balanceOf(address):(uint)",
-        result
+        pairAddress || "0x552FA77cC030BA9F424927AE2A3D32A0F2BA4cE9"
       );
 
       const getSCBalanceOfTokenB = abi.simpleEncode(
         "balanceOf(address):(uint)",
-        result
+        pairAddress || "0x552FA77cC030BA9F424927AE2A3D32A0F2BA4cE9"
       );
 
       const getSCBalanceOfTokenAHex = getSCBalanceOfTokenA.toString("hex");
 
       const getSCBalanceOfTokenBHex = getSCBalanceOfTokenB.toString("hex");
 
-      const getSCBalanceOfTokenAReceipt = await web3.tolar.tryCallTransaction(
-        connectedAccount,
+      const getAmountOfOutputTokensHex = await getAmountOfOutputTokens(
+        1,
         addressTokenA.address,
-        0,
-        600000,
-        1,
-        getSCBalanceOfTokenAHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: scBalanceOfTokenA } = web3.eth.abi.decodeParameters(
-        ["uint"],
-        getSCBalanceOfTokenAReceipt.output
-      );
-
-      const getSCBalanceOfTokenBReceipt = await web3.tolar.tryCallTransaction(
-        connectedAccount,
         addressTokenB.address,
-        0,
-        600000,
-        1,
-        getSCBalanceOfTokenBHex,
-        await web3.tolar.getNonce(connectedAccount)
+        connectedAccount
       );
 
-      const { 0: scBalanceOfTokenB } = web3.eth.abi.decodeParameters(
-        ["uint"],
-        getSCBalanceOfTokenBReceipt.output
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          RouterAddress,
+          0,
+          600000,
+          1,
+          getAmountOfOutputTokensHex,
+          nonce
+        )
+        .then((result) => {
+          const { 0: outputParsed } = web3.eth.abi.decodeParameters(
+            ["uint256[]"],
+            result.output
+          );
+          const newOutputParsed = (outputParsed || []).map(
+            (value) => +new BigNumber(value).shiftedBy(-18).toFixed(3)
+          );
+          const [, tokenOutAmount] = newOutputParsed;
+          store.dispatch({
+            type: types.ON_CALCULATE_AMOUNTS_OUT,
+            payload: tokenOutAmount,
+          });
+          // store.dispatch({ type: types.ON_CALCULATE_AMOUNTS_OUT_RECEIPT, payload: result });
+        });
+
+      const getAmountOfInputTokensHex = await getAmountOfInputTokens(
+        1,
+        addressTokenB.address,
+        addressTokenA.address,
+        connectedAccount
       );
+
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          RouterAddress,
+          0,
+          600000,
+          1,
+          getAmountOfInputTokensHex,
+          nonce
+        )
+        .then((result) => {
+          const { 0: outputAmountInResponse } = web3.eth.abi.decodeParameters(
+            ["uint256[]"],
+            result.output
+          );
+
+          const newOutputAmountInParsed = (outputAmountInResponse || []).map(
+            (value) => +new BigNumber(value).shiftedBy(-18).toFixed(3)
+          );
+          const [, tokenInAmount] = newOutputAmountInParsed;
+          store.dispatch({
+            type: types.ON_CALCULATE_AMOUNTS_IN,
+            payload: tokenInAmount,
+          });
+          // store.dispatch({ type: types.ON_CALCULATE_AMOUNTS_IN_RECEIPT, payload: result });
+        });
+
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          addressTokenA.address,
+          0,
+          600000,
+          1,
+          getSCBalanceOfTokenAHex,
+          nonce
+        )
+        .then((result) => {
+          const { 0: scBalanceOfTokenA } = web3.eth.abi.decodeParameters(
+            ["uint"],
+            result.output
+          );
+          store.dispatch({
+            type: types.ON_SC_BALANCE_FOR_TOKEN_A,
+            payload: scBalanceOfTokenA,
+          });
+        });
+
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          addressTokenB.address,
+          0,
+          600000,
+          1,
+          getSCBalanceOfTokenBHex,
+          nonce
+        )
+        .then((result) => {
+          const { 0: scBalanceOfTokenB } = web3.eth.abi.decodeParameters(
+            ["uint"],
+            result.output
+          );
+          store.dispatch({
+            type: types.ON_SC_BALANCE_FOR_TOKEN_B,
+            payload: scBalanceOfTokenB,
+          });
+        });
 
       const scBalanceOfTokenAToNum = parseFloat(
-        new BigNumber(scBalanceOfTokenA).shiftedBy(-18).toFixed(0)
+        new BigNumber(scBalanceOfTokenAA).shiftedBy(-18).toFixed(0)
       );
 
       const scBalanceOfTokenBToNum = parseFloat(
-        new BigNumber(scBalanceOfTokenB).shiftedBy(-18).toFixed(0)
+        new BigNumber(scBalanceOfTokenBB).shiftedBy(-18).toFixed(0)
       );
 
       const myInputAndOutputTogether =
@@ -133,20 +219,26 @@ function CheckAddressPairExistence(props) {
 
       const totalSupplyHex = totalSupply.toString("hex");
 
-      const getTotalSupply = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(result),
-        0,
-        600000,
-        1,
-        totalSupplyHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: supplyOutput } = web3.eth.abi.decodeParameters(
-        ["uint"],
-        getTotalSupply.output
-      );
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          long(pairAddress || "0x552FA77cC030BA9F424927AE2A3D32A0F2BA4cE9"),
+          0,
+          600000,
+          1,
+          totalSupplyHex,
+          nonce
+        )
+        .then((result) => {
+          const { 0: supplyOutput } = web3.eth.abi.decodeParameters(
+            ["uint"],
+            result.output
+          );
+          store.dispatch({
+            type: types.ON_GET_TOTAL_SUPPLY,
+            payload: supplyOutput,
+          });
+        });
 
       const balanceOf = abi.simpleEncode(
         "balanceOf(address):(uint)",
@@ -154,43 +246,45 @@ function CheckAddressPairExistence(props) {
       );
       const balanceOfHex = balanceOf.toString("hex");
 
-      const getBalanceOfMyAccount = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        long(result),
-        0,
-        600000,
-        1,
-        balanceOfHex,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: balanceOutput } = web3.eth.abi.decodeParameters(
-        ["uint"],
-        getBalanceOfMyAccount.output
-      );
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          long(pairAddress || "0x552FA77cC030BA9F424927AE2A3D32A0F2BA4cE9"),
+          0,
+          600000,
+          1,
+          balanceOfHex,
+          nonce
+        )
+        .then((result) => {
+          const { 0: balanceOutput } = web3.eth.abi.decodeParameters(
+            ["uint"],
+            result.output
+          );
+          store.dispatch({
+            type: types.ON_GET_ADDRESS_BALANCE,
+            payload: balanceOutput,
+          });
+        });
 
       const myBalanceToNumber = parseFloat(
-        new BigNumber(balanceOutput).shiftedBy(-18).toFixed(0)
+        new BigNumber(addrBalance).shiftedBy(-18).toFixed(0)
       );
 
-      if (result !== "0x0000000000000000000000000000000000000000") {
+      if (pairAddress !== "0x0000000000000000000000000000000000000000") {
         props.setIsPairExistent(true);
-        if (amountOutResponse.excepted || amountInResponse.expected) {
-          return;
-        }
-
-        const [, tokenOutAmount] = amountOutResponse.outputParsed;
-        const [, tokenInAmount] = amountInResponse.outputParsed;
-
-        const percent = percentage.calculate(balanceOutput, supplyOutput);
+        // if (getAmountOutReceipt.excepted || getAmountInReceipt.excepted) {
+        //   return;
+        // }
+        const percent = percentage.calculate(addrBalance, totalSupp);
 
         setFieldValue(
           "amountOfBPerA",
-          liquidityPriceFOrmatter.format(tokenOutAmount).substring(1)
+          liquidityPriceFOrmatter.format(tokOutAmount).substring(1)
         );
         setFieldValue(
           "amountOfAPerB",
-          liquidityPriceFOrmatter.format(tokenInAmount).substring(1)
+          liquidityPriceFOrmatter.format(tokInAmount).substring(1)
         );
         const percentageString = percent.toString();
 
@@ -207,46 +301,48 @@ function CheckAddressPairExistence(props) {
             scBalanceOfTokenBToNum
           );
 
-          const getMintingAmount = await web3.tolar.tryCallTransaction(
-            connectedAccount,
-            RouterAddress,
-            0,
-            10000000,
-            1,
-            quoteHex,
-            await web3.tolar.getNonce(connectedAccount)
-          );
+          web3.tolar
+            .tryCallTransaction(
+              connectedAccount,
+              RouterAddress,
+              0,
+              10000000,
+              1,
+              quoteHex,
+              nonce
+            )
+            .then((result) => {
+              const { 0: mintingAmount } = web3.eth.abi.decodeParameters(
+                ["uint"],
+                result.output
+              );
 
-          const { 0: mintingAmount } = web3.eth.abi.decodeParameters(
-            ["uint"],
-            getMintingAmount.output
-          );
+              const mintingToNum = parseFloat(
+                new BigNumber(mintingAmount).shiftedBy(-18).toFixed(0)
+              );
 
-          const mintingToNum = parseFloat(
-            new BigNumber(mintingAmount).shiftedBy(-18).toFixed(0)
-          );
+              const totalSupplyToNum = parseFloat(
+                new BigNumber(totalSupp).shiftedBy(-18).toFixed(0)
+              );
 
-          const totalSupplyToNum = parseFloat(
-            new BigNumber(supplyOutput).shiftedBy(-18).toFixed(0)
-          );
+              const totalSupplyAndMintingAmountTogether =
+                mintingToNum + totalSupplyToNum;
 
-          const totalSupplyAndMintingAmountTogether =
-            mintingToNum + totalSupplyToNum;
+              const myPercentage = myBalanceToNumber + mintingToNum;
 
-          const myPercentage = myBalanceToNumber + mintingToNum;
+              const calcul = percentage.calculate(
+                myPercentage,
+                totalSupplyAndMintingAmountTogether
+              );
 
-          const calcul = percentage.calculate(
-            myPercentage,
-            totalSupplyAndMintingAmountTogether
-          );
+              const calculString = calcul.toString();
 
-          const calculString = calcul.toString();
-
-          if (calculString.substring(1, 2) === ".") {
-            setFieldValue("poolShare", calculString.substring(0, 4));
-          } else {
-            setFieldValue("poolShare", calculString.substring(0, 5));
-          }
+              if (calculString.substring(1, 2) === ".") {
+                setFieldValue("poolShare", calculString.substring(0, 4));
+              } else {
+                setFieldValue("poolShare", calculString.substring(0, 5));
+              }
+            });
         }
       } else {
         props.setIsPairExistent(false);

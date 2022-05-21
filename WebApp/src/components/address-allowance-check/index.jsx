@@ -6,27 +6,30 @@ import { useSelector } from "react-redux";
 
 export const CheckAddressAllowanceForToken = (props) => {
   const { values } = useFormikContext();
-  const connectedAccount = useSelector(state=>state.user.account)
+  const connectedAccount = useSelector((state) => state.user.account);
+
   const checkAddressAllowance = async (name, value) => {
+    const nonce = await web3.tolar.getNonce(connectedAccount);
     try {
-    
       const hexAllowance = await checkForAllowance(connectedAccount);
 
-      const receipt = await web3.tolar.tryCallTransaction(
-        connectedAccount,
-        value.address,
-        0,
-        600000,
-        1,
-        hexAllowance,
-        await web3.tolar.getNonce(connectedAccount)
-      );
-
-      const { 0: result } = web3.eth.abi.decodeParameters(
-        ["uint256"],
-        receipt.output
-      );
-      props.setAllowedToSwap(result !== "0");
+      web3.tolar
+        .tryCallTransaction(
+          connectedAccount,
+          value.address,
+          0,
+          600000,
+          1,
+          hexAllowance,
+          nonce
+        )
+        .then((receipt) => {
+          const { 0: result } = web3.eth.abi.decodeParameters(
+            ["uint256"],
+            receipt.output
+          );
+          props.setAllowedToSwap(result !== "0");
+        });
     } catch {
       props.setAllowedToSwap(true);
     }

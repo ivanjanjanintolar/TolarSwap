@@ -32,7 +32,7 @@ export const quote = async (amountIn, reserveTokenA, reserveTokenB) => {
       stateMutability: "pure",
       type: "function",
     },
-    [new BigNumber(amountIn).shiftedBy(18), reserveTokenA, reserveTokenB]
+    [new BigNumber(amountIn).shiftedBy(18).toString(), reserveTokenA, reserveTokenB]
   );
 
   return encoded;

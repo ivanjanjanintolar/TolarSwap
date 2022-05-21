@@ -20,17 +20,22 @@ import promiseRetry from "promise-retry";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { connectWallet } from "../../core/store/actions/web3";
+import { round } from "../../utils/common";
 
 export default function SwapCard() {
   const [allowedToSwap, setAllowedToSwap] = useState(true);
   const [isPairExistent, setIsPairExistent] = useState(false);
   const [sufficientLiquidity, setSufficientLiquidity] = useState(true);
-  const isInputHigherThanBalance = useSelector(state=>state.user.inputHigherThanBalance)
+  const isInputHigherThanBalance = useSelector(
+    (state) => state.user.inputHigherThanBalance
+  );
   const dispatch = useDispatch();
-  const connected = useSelector(state=>state.user.isConnected)
-  const connectedAccount = useSelector(state=>state.user.account)
+  const connected = useSelector((state) => state.user.isConnected);
+  const connectedAccount = useSelector((state) => state.user.account);
 
   const onValueChangeAmountIn = async (props, e) => {
+    const nonce = await web3.tolar.getNonce(connectedAccount);
+
     if (!isPairExistent) {
       setSufficientLiquidity(false);
       return props.setFieldValue("amountOut", "");
@@ -42,27 +47,49 @@ export default function SwapCard() {
     ) {
       return props.setFieldValue("amountOut", "");
     }
-    const receipt = await getAmountOfOutputTokens(
+    const getAmountsOutHex = await getAmountOfOutputTokens(
       Number(e.target.value),
       props.values.addressTokenA.address,
       props.values.addressTokenB.address,
       connectedAccount
     );
 
-    if (receipt.excepted) {
-      return;
-    }
-    const [, tokenOutAmount] = receipt.outputParsed;
+    web3.tolar
+      .tryCallTransaction(
+        connectedAccount,
+        RouterAddress,
+        0,
+        600000,
+        1,
+        getAmountsOutHex,
+        nonce
+      )
+      .then((result) => {
+        const { 0: outputAmountOutResponse } = web3.eth.abi.decodeParameters(
+          ["uint256[]"],
+          result.output
+        );
 
-    if (tokenOutAmount === 0) {
-      setSufficientLiquidity(false);
-    }
+        const newOutputAmountInParsed = (outputAmountOutResponse || []).map(
+          (value) => +new BigNumber(value).shiftedBy(-18).toFixed(3)
+        );
 
-    props.setFieldValue("amountOut", tokenOutAmount);
+        if (result.excepted) {
+          return;
+        }
+        const [, tokenOutAmount] = newOutputAmountInParsed;
+
+        if (tokenOutAmount === 0) {
+          setSufficientLiquidity(false);
+        }
+
+        props.setFieldValue("amountOut", tokenOutAmount);
+      });
   };
   const debouncedOnValueChangeAmountIn = debounce(onValueChangeAmountIn, 1500);
 
   const onValueChangeAmountOut = async (props, e) => {
+    const nonce = await web3.tolar.getNonce(connectedAccount);
     if (!isPairExistent) {
       setSufficientLiquidity(false);
       return props.setFieldValue("amountIn", "");
@@ -74,24 +101,45 @@ export default function SwapCard() {
     ) {
       return props.setFieldValue("amountIn", "");
     }
-    const receipt = await getAmountOfInputTokens(
+    const getAmountInHex = await getAmountOfInputTokens(
       Number(e.target.value),
       props.values.addressTokenB.address,
       props.values.addressTokenA.address,
       connectedAccount
     );
 
-    if (receipt.excepted) {
-      return;
-    }
+    web3.tolar
+      .tryCallTransaction(
+        connectedAccount,
+        RouterAddress,
+        0,
+        600000,
+        1,
+        getAmountInHex,
+        nonce
+      )
+      .then((result) => {
+        const { 0: outputAmountInResponse } = web3.eth.abi.decodeParameters(
+          ["uint256[]"],
+          result.output
+        );
 
-    const [, tokenOutAmount] = receipt.outputParsed;
+        const newOutputAmountInParsed = (outputAmountInResponse || []).map(
+          (value) => +new BigNumber(value).shiftedBy(-18).toFixed(3)
+        );
 
-    if (tokenOutAmount === 0) {
-      setSufficientLiquidity(false);
-    }
+        if (result.excepted) {
+          return;
+        }
 
-    props.setFieldValue("amountIn", tokenOutAmount);
+        const [, tokenOutAmount] = newOutputAmountInParsed;
+
+        if (tokenOutAmount === 0) {
+          setSufficientLiquidity(false);
+        }
+
+        props.setFieldValue("amountIn", tokenOutAmount);
+      });
   };
 
   const debouncedOnValueChangeAmountOut = debounce(onValueChangeAmountOut, 500);
@@ -112,7 +160,7 @@ export default function SwapCard() {
             minAmountOut: values.amountOut - (5 / 100) * values.amountOut,
             addressTokenA: values.addressTokenA.address,
             addressTokenB: values.addressTokenB.address,
-            account:connectedAccount
+            account: connectedAccount,
           });
 
           window.tolar
@@ -152,20 +200,8 @@ export default function SwapCard() {
                         progress: undefined,
                       });
                     } else {
-                      const { 0: outputParsed } = web3.eth.abi.decodeParameters(
-                        ["uint256[]"],
-                        value.output
-                      );
                       toast.update(id, {
-                        render: `You have successfully swapped ${new BigNumber(
-                          outputParsed[0]
-                        )
-                          .shiftedBy(-18)
-                          .toFixed(2)} ${
-                          values.addressTokenA.symbol
-                        } for ${new BigNumber(outputParsed[1])
-                          .shiftedBy(-18)
-                          .toFixed(2)} ${values.addressTokenB.symbol}! 🥳`,
+                        render: `You have successfully swapped your tokens! 🥳`,
                         type: "success",
                         autoClose: 5000,
                         isLoading: false,

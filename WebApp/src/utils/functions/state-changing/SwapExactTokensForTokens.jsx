@@ -44,8 +44,8 @@ export const swapExactTokensForTokens = async ({
       ],
     },
     [
-      new BigNumber(amountIn).shiftedBy(18),
-      new BigNumber(minAmountOut).shiftedBy(18),
+      new BigNumber(amountIn).shiftedBy(18).toString(),
+      new BigNumber(minAmountOut).shiftedBy(18).toString(),
       [short(addressTokenA), short(addressTokenB)],
       short(account),
       timeDelay,
